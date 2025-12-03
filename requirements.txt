@@ -8,8 +8,6 @@ scikit-image==0.22.0
 plotly==5.18.0
 reportlab==4.0.9
 scipy==1.11.4
-
-# MOST IMPORTANT → Compatible with Streamlit 1.28 + Python 3.11 + PyTorch 2.5
 numpy==1.26.4
 
 torch==2.5.1
