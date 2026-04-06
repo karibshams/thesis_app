@@ -25,6 +25,20 @@ from reportlab.lib import colors as rl_colors
 import pickle
 import os
 
+# ==================== LOGO ====================
+LOGO_SVG = """<svg width="52" height="52" viewBox="0 0 52 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="lg1" x1="0" y1="0" x2="52" y2="52" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#2ed573"/><stop offset="100%" stop-color="#3498db"/></linearGradient></defs>
+  <polygon points="26,2 48,14 48,38 26,50 4,38 4,14" fill="none" stroke="url(#lg1)" stroke-width="2" opacity="0.7"/>
+  <path d="M26 12 C18 18 14 28 20 36 C22 32 24 28 26 24 C28 28 30 32 32 36 C38 28 34 18 26 12Z" fill="url(#lg1)" opacity="0.9"/>
+  <line x1="26" y1="36" x2="26" y2="44" stroke="url(#lg1)" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="14" cy="26" r="2.5" fill="#3498db" opacity="0.8"/>
+  <circle cx="38" cy="26" r="2.5" fill="#a29bfe" opacity="0.8"/>
+  <circle cx="26" cy="12" r="2" fill="#2ed573" opacity="0.9"/>
+  <line x1="14" y1="26" x2="22" y2="22" stroke="#3498db" stroke-width="1" opacity="0.5"/>
+  <line x1="38" y1="26" x2="30" y2="22" stroke="#a29bfe" stroke-width="1" opacity="0.5"/>
+</svg>"""
+LOGO_SM = LOGO_SVG.replace('width="52"','width="28"').replace('height="52"','height="28"')
+
 # ==================== PAGE CONFIG & CUSTOM CSS ====================
 st.set_page_config(
     page_title="AgroVision - Precision Agriculture AI",
@@ -301,15 +315,20 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==================== HERO HEADER ====================
-st.markdown("""
+st.markdown(f"""
 <div class="agrovision-hero">
-    <div class="agrovision-badge">🌿 Precision Agriculture AI</div>
-    <h1 class="agrovision-title">AgroVision</h1>
-    <p style="font-size:1.15rem;font-weight:500;color:rgba(200,255,200,0.85);margin:0.2rem 0 0.1rem;">
-        SSL & Graph-Refined Object Detection for Precision Agriculture
+    <div style="display:flex;align-items:center;gap:1.2rem;margin-bottom:0.5rem;">
+        {LOGO_SVG}
+        <div>
+            <div class="agrovision-badge">🌿 Precision Agriculture AI</div>
+            <h1 class="agrovision-title">AgroVision</h1>
+        </div>
+    </div>
+    <p style="font-size:1.05rem;font-weight:500;color:rgba(200,255,200,0.85);margin:0.2rem 0 0.1rem;">
+        SSL &amp; Graph-Refined Object Detection for Precision Agriculture
     </p>
     <p class="agrovision-subtitle">
-        Professional-grade Sunflower & Rice Detection · YOLOv11 · Multi-model Analysis · AI-powered Reports
+        Sunflower &amp; Rice Detection · YOLOv11 · Multi-model · AI Reports · Multi-image Analysis
     </p>
 </div>
 """, unsafe_allow_html=True)
@@ -317,10 +336,9 @@ st.markdown("""
 # Initialize session state
 if 'roi_mode' not in st.session_state:
     st.session_state.roi_mode = False
-if 'roi_points' not in st.session_state:
-    st.session_state.roi_points = []
 if 'loaded_models' not in st.session_state:
     st.session_state.loaded_models = {}
+
 
 # ==================== SIDEBAR CONFIGURATION ====================
 with st.sidebar:
@@ -632,16 +650,17 @@ def create_histogram_equalized(image_np):
     return Image.fromarray(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
 
 def dark_chart_style():
+    # NOTE: matplotlib does NOT accept rgba() strings — hex only
     plt.rcParams.update({
         'figure.facecolor': '#0a140a',
-        'axes.facecolor': '#0d1f0d',
-        'axes.edgecolor': 'rgba(46,213,115,0.2)',
-        'axes.labelcolor': '#8fe8b0',
-        'xtick.color': '#8fe8b0',
-        'ytick.color': '#8fe8b0',
-        'text.color': '#b0e8b0',
-        'grid.color': 'rgba(46,213,115,0.1)',
-        'grid.alpha': 0.3,
+        'axes.facecolor':   '#0d1f0d',
+        'axes.edgecolor':   '#1a3a1a',   # was rgba(46,213,115,0.2) — fixed to hex
+        'axes.labelcolor':  '#8fe8b0',
+        'xtick.color':      '#8fe8b0',
+        'ytick.color':      '#8fe8b0',
+        'text.color':       '#b0e8b0',
+        'grid.color':       '#1a3a1a',   # was rgba(46,213,115,0.1) — fixed to hex
+        'grid.alpha':       0.4,
     })
 
 def create_color_distribution(image_np):
