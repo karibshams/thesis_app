@@ -218,7 +218,7 @@ st.markdown("""
 <div class="agrovision-hero">
     <div class="agrovision-badge">🌿 Precision Agriculture AI</div>
     <div class="agrovision-logo-wrap">
-        <svg class="agrovision-logo-svg" width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg class="agrovision-logo-svg" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
             <circle cx="31" cy="31" r="30" stroke="rgba(46,213,115,0.35)" stroke-width="1.5"/>
             <circle cx="31" cy="31" r="24" stroke="rgba(46,213,115,0.15)" stroke-width="1"/>
             <!-- Leaf body -->
