@@ -41,7 +41,6 @@ st.markdown("""
         background: linear-gradient(135deg, #0a0f0a 0%, #0d1f0d 40%, #0a1a1f 100%);
         min-height: 100vh;
     }
-    /* ── Logo Hero ── */
     .agrovision-hero {
         background: linear-gradient(135deg, #0d2b1a 0%, #0a1f2e 50%, #1a0d2b 100%);
         border: 1px solid rgba(46,213,115,0.2);
@@ -68,10 +67,17 @@ st.markdown("""
         filter: drop-shadow(0 0 12px rgba(46,213,115,0.4));
     }
     .agrovision-title {
-        font-size: 2.8rem; font-weight: 800;
-        background: linear-gradient(135deg, #2ed573, #3498db, #a29bfe);
-        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        background-clip: text; margin: 0; line-height: 1.1; letter-spacing: -1px;
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin: 0;
+        line-height: 1.1;
+        letter-spacing: -1px;
+        background: linear-gradient(135deg, #2ed573 0%, #3498db 50%, #a29bfe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
     }
     .agrovision-subtitle {
         font-size: 0.95rem; color: rgba(200,255,200,0.55);
@@ -91,7 +97,38 @@ st.markdown("""
         margin-bottom: 0.8rem;
         box-shadow: 0 0 12px rgba(46,213,115,0.4);
     }
-    /* (rest of your CSS unchanged) */
+    .section-header {
+        font-size: 1rem; font-weight: 600;
+        color: rgba(46,213,115,0.85);
+        margin-bottom: 0.5rem;
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(46,213,115,0.2);
+    }
+    .analysis-insight {
+        background: rgba(46,213,115,0.07);
+        border: 1px solid rgba(46,213,115,0.2);
+        border-radius: 12px;
+        padding: 1rem 1.2rem;
+        margin-top: 0.8rem;
+        color: rgba(200,255,200,0.8);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    .insight-title {
+        font-weight: 700;
+        color: #2ed573;
+        margin-bottom: 0.4rem;
+        font-size: 0.95rem;
+    }
+    .plain-explanation {
+        margin-top: 0.6rem;
+        padding: 0.5rem 0.8rem;
+        background: rgba(52,152,219,0.08);
+        border-left: 3px solid rgba(52,152,219,0.5);
+        border-radius: 0 8px 8px 0;
+        color: rgba(180,220,255,0.8);
+        font-size: 0.88rem;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -100,29 +137,26 @@ st.markdown("""
 <div class="agrovision-hero">
     <div class="agrovision-badge">🌿 Precision Agriculture AI</div>
     <div class="agrovision-logo-wrap">
-        <svg class="agrovision-logo-svg" width="45" height="45" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="31" cy="31" r="30" stroke="rgba(46,213,115,0.35)" stroke-width="1.5"/>
-            <circle cx="31" cy="31" r="24" stroke="rgba(46,213,115,0.15)" stroke-width="1"/>
-            <!-- Leaf body -->
-            <path d="M31 50 C31 50 14 40 14 26 C14 17 21 10 31 10 C41 10 48 17 48 26 C48 40 31 50 31 50Z"
-                  fill="rgba(46,213,115,0.12)" stroke="#2ed573" stroke-width="1.8" stroke-linejoin="round"/>
-            <!-- Stem -->
-            <line x1="31" y1="50" x2="31" y2="23" stroke="#2ed573" stroke-width="1.8" stroke-linecap="round"/>
-            <!-- Left vein -->
-            <path d="M31 32 C27 29 22 27 19 22" stroke="rgba(46,213,115,0.6)" stroke-width="1.2" stroke-linecap="round"/>
-            <!-- Right vein -->
-            <path d="M31 36 C35 33 40 31 43 26" stroke="rgba(46,213,115,0.6)" stroke-width="1.2" stroke-linecap="round"/>
-            <!-- Detection box overlay hint -->
-            <rect x="23" y="18" width="10" height="10" rx="2" stroke="rgba(52,152,219,0.7)" stroke-width="1.2" fill="none" stroke-dasharray="2 1"/>
-            <rect x="35" y="26" width="8" height="8" rx="2" stroke="rgba(52,152,219,0.5)" stroke-width="1" fill="none" stroke-dasharray="2 1"/>
+    <svg class="agrovision-logo-svg" width="45" height="45" ...> ... </svg>
+    <div>
+        <svg width="320" height="55" viewBox="0 0 320 55" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%"   stop-color="#2ed573"/>
+              <stop offset="50%"  stop-color="#3498db"/>
+              <stop offset="100%" stop-color="#a29bfe"/>
+            </linearGradient>
+          </defs>
+          <text x="0" y="45" font-family="Inter, sans-serif" font-size="48"
+                font-weight="800" fill="url(#titleGrad)" letter-spacing="-1">
+            AgroVision
+          </text>
         </svg>
-        <div>
-            <h1 class="agrovision-title">AgroVision</h1>
-            <p style="font-size:0.85rem;font-weight:300;color:rgba(46,213,115,0.35);margin:0.15rem 0 0;">
-                SSL &amp; Graph-Refined Object Detection · Sunflower &amp; Rice 
-            </p>
-        </div>
+        <p style="font-size:0.85rem;font-weight:300;color:rgba(46,213,115,0.35);margin:0.15rem 0 0;">
+            SSL &amp; Graph-Refined Object Detection · Sunflower &amp; Rice 
+        </p>
     </div>
+</div>
     <p class="agrovision-subtitle">
         Upload one or more crop images · Get instant AI-powered detection, health scores &amp; detailed reports
     </p>
@@ -394,7 +428,7 @@ def create_histogram_equalized(image_np):
     return Image.fromarray(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
 
 # ── matplotlib RGBA as tuples (NOT CSS strings) ────────────────────
-_GREEN      = (0.180, 0.835, 0.451)   # rgb(46,213,115)
+_GREEN      = (0.180, 0.835, 0.451)
 _GREEN_02   = (*_GREEN, 0.20)
 _GREEN_015  = (*_GREEN, 0.15)
 _GREEN_03   = (*_GREEN, 0.30)
@@ -407,12 +441,12 @@ def dark_chart_style():
     plt.rcParams.update({
         'figure.facecolor': '#0a140a',
         'axes.facecolor':   '#0d1f0d',
-        'axes.edgecolor':   _GREEN_02,     # FIX: was 'rgba(...)' string
+        'axes.edgecolor':   _GREEN_02,
         'axes.labelcolor':  '#8fe8b0',
         'xtick.color':      '#8fe8b0',
         'ytick.color':      '#8fe8b0',
         'text.color':       '#b0e8b0',
-        'grid.color':       _GREEN_015,    # FIX: was 'rgba(...)' string
+        'grid.color':       _GREEN_015,
         'grid.alpha':       0.3,
     })
 
@@ -617,7 +651,6 @@ def calculate_health_score(detections, image_shape):
 # ==================== INSIGHT GENERATORS ====================
 
 def _plain(text):
-    """Wrap a plain-English explanation."""
     return f'<div class="plain-explanation">💡 <b>In plain terms:</b> {text}</div>'
 
 def get_heatmap_insight(detections, heatmap_type="density"):
@@ -955,9 +988,6 @@ def export_detections_json(detections, image_filename):
 def render_insight_and_pdf(technical_text, plain_text, section_name, icon,
                             pdf_fig=None, detections=None, image_quality=None, health_score=0,
                             key_suffix=""):
-    # Render insight box
-    safe_tech = technical_text.replace("**", "<b>", 1)
-    # crude bold replacement
     result = ""
     toggle = False
     for ch in technical_text:
@@ -970,6 +1000,7 @@ def render_insight_and_pdf(technical_text, plain_text, section_name, icon,
                 toggle = False
         else:
             result += ch
+
     st.markdown(f"""
     <div class="analysis-insight">
         <div class="insight-title">{icon} AI Analysis Insight</div>
@@ -978,7 +1009,6 @@ def render_insight_and_pdf(technical_text, plain_text, section_name, icon,
     </div>
     """, unsafe_allow_html=True)
 
-    # Section PDF button
     col_pad, col_btn = st.columns([4, 1])
     with col_btn:
         key = f"pdf_{section_name}_{key_suffix}"
@@ -1006,7 +1036,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
                           enable_gradcam, enable_heatmap, enable_3d,
                           enable_preprocessing, enable_proximity, enable_grid,
                           img_index=0):
-    """Run full analysis for one uploaded image and render all tabs."""
     image_pil = Image.open(uploaded_file).convert('RGB')
     image_np  = pil_to_cv2(image_pil)
 
@@ -1018,9 +1047,8 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
     health_score  = calculate_health_score(filtered_detections, image_np.shape)
     stats_df      = create_class_statistics(filtered_detections)
     avg_conf      = np.mean([float(d["Confidence"]) for d in filtered_detections]) if filtered_detections else 0
-    ks            = str(img_index)  # unique key suffix per image
+    ks            = str(img_index)
 
-    # ── Key Metrics Row ──
     c1, c2, c3, c4 = st.columns(4)
     with c1: st.metric("🌾 Health Score",  f"{health_score:.1f}/100")
     with c2: st.metric("📊 Detections",    len(filtered_detections))
@@ -1034,7 +1062,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
          "🔬 Image Analysis","📊 Analytics","📈 Advanced Charts","📋 Details"]
     )
 
-    # ── TAB 1: Detection ──
     with tab1:
         col1, col2 = st.columns(2)
         with col1:
@@ -1052,7 +1079,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
                                detections=filtered_detections, image_quality=image_quality,
                                health_score=health_score, key_suffix=ks)
 
-    # ── TAB 2: Grad-CAM ──
     with tab2:
         if enable_gradcam:
             st.markdown('<div class="section-header">🔥 Grad-CAM Attention Heatmap</div>', unsafe_allow_html=True)
@@ -1072,7 +1098,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
         else:
             st.info("Grad-CAM disabled in settings")
 
-    # ── TAB 3: Heatmaps ──
     with tab3:
         col1, col2 = st.columns(2)
         with col1:
@@ -1097,7 +1122,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
                                detections=filtered_detections, image_quality=image_quality,
                                health_score=health_score, key_suffix=ks)
 
-    # ── TAB 4: 3D View ──
     with tab4:
         if enable_3d:
             st.markdown('<div class="section-header">🔮 3D Detection Visualization</div>', unsafe_allow_html=True)
@@ -1113,7 +1137,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
         else:
             st.info("3D visualization disabled")
 
-    # ── TAB 5: Image Analysis ──
     with tab5:
         if enable_preprocessing:
             col1, col2 = st.columns(2)
@@ -1137,7 +1160,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
         else:
             st.info("Image Analysis disabled in settings")
 
-    # ── TAB 6: Analytics ──
     with tab6:
         col1, col2 = st.columns(2)
         class_fig = None
@@ -1155,7 +1177,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
                                detections=filtered_detections, image_quality=image_quality,
                                health_score=health_score, key_suffix=ks)
 
-    # ── TAB 7: Advanced Charts ──
     with tab7:
         col1, col2 = st.columns(2)
         scatter_fig = None
@@ -1181,7 +1202,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
                                detections=filtered_detections, image_quality=image_quality,
                                health_score=health_score, key_suffix=ks)
 
-    # ── TAB 8: Details ──
     with tab8:
         st.markdown('<div class="section-header">📋 Class-wise Statistics</div>', unsafe_allow_html=True)
         if not stats_df.empty:
@@ -1203,7 +1223,6 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
                                detections=filtered_detections, image_quality=image_quality,
                                health_score=health_score, key_suffix=ks)
 
-    # ── Export Section ──
     st.markdown("---")
     st.markdown('<div class="section-header">💾 Export & Download</div>', unsafe_allow_html=True)
     c1, c2, c3, c4 = st.columns(4)
@@ -1257,7 +1276,6 @@ else:
 
     if model is not None and model_type == "yolo":
 
-        # ── Image Upload (always multi) ──
         st.markdown('<div class="section-header">📁 Upload Crop Images</div>', unsafe_allow_html=True)
         uploaded_files = st.file_uploader(
             "Upload one or more images — full analysis will be shown for each",
@@ -1269,7 +1287,6 @@ else:
         if uploaded_files:
             n_imgs = len(uploaded_files)
 
-            # ── Batch summary bar ──
             if n_imgs > 1:
                 st.markdown(f"""
                 <div style='background:rgba(46,213,115,0.08);border:1px solid rgba(46,213,115,0.2);
@@ -1283,7 +1300,6 @@ else:
                 </div>
                 """, unsafe_allow_html=True)
 
-            # ── Per-image analysis ──
             for idx, uploaded_file in enumerate(uploaded_files):
                 header = f"📸 Image {idx+1} of {n_imgs}: {uploaded_file.name}"
                 with st.expander(header, expanded=(idx == 0)):
@@ -1297,7 +1313,6 @@ else:
                         img_index=idx
                     )
 
-            # ── Batch ZIP export when multiple images ──
             if n_imgs > 1:
                 st.markdown("---")
                 st.markdown('<div class="section-header">📦 Batch Export All Images</div>', unsafe_allow_html=True)
