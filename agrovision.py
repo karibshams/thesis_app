@@ -237,7 +237,7 @@ st.markdown("""
         <div>
             <h1 class="agrovision-title">AgroVision</h1>
             <p style="font-size:0.85rem;font-weight:500;color:rgba(200,255,200,0.7);margin:0.15rem 0 0;">
-                SSL &amp; Graph-Refined Object Detection · Sunflower &amp; Rice · YOLOv11
+                SSL &amp; Graph-Refined Object Detection · Sunflower &amp; Rice 
             </p>
         </div>
     </div>
@@ -260,7 +260,7 @@ with st.sidebar:
     st.markdown("### ⚙️ Configuration")
 
     st.markdown("**📤 Upload Models** (up to 10)")
-    st.caption("`.pt` (YOLOv11) · `.pkl` (scikit-learn)")
+    st.caption("`.pt` (YOLOv) · `.pkl` (scikit-learn)")
     uploaded_models = st.file_uploader(
         "Upload model files", type=["pt", "pkl"],
         accept_multiple_files=True, label_visibility="collapsed"
