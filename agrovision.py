@@ -344,20 +344,97 @@ def generate_density_heatmap(detections, image_shape):
     heatmap_colored = cv2.applyColorMap((heatmap*255).astype(np.uint8), cv2.COLORMAP_TURBO)
     return Image.fromarray(cv2.cvtColor(heatmap_colored, cv2.COLOR_BGR2RGB)), heatmap
 
+def _build_full_image_heatmap(image_np, results, sigma_scale=0.55):
+    """
+    Build a FULL-IMAGE smooth Gaussian heatmap (JET colormap style).
+    Each detected box contributes a 2-D Gaussian spread across the whole
+    image canvas — not just clamped inside the box — so the result looks
+    like the reference paper: blue background, smooth red/yellow hotspots.
+    sigma_scale: larger = wider blobs (Grad-CAM); smaller = tighter (Grad-CAM++).
+    """
+    h, w = image_np.shape[:2]
+    # Work at half resolution for speed, upsample at the end
+    hh, hw = max(h // 2, 1), max(w // 2, 1)
+    xs = np.linspace(0, w - 1, hw, dtype=np.float32)
+    ys = np.linspace(0, h - 1, hh, dtype=np.float32)
+    xg, yg = np.meshgrid(xs, ys)          # (hh, hw)
+    heatmap = np.zeros((hh, hw), dtype=np.float32)
+
+    for result in results:
+        for box in result.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            conf  = float(box.conf[0])
+            cx    = (x1 + x2) / 2.0
+            cy    = (y1 + y2) / 2.0
+            bw    = max(x2 - x1, 1)
+            bh_   = max(y2 - y1, 1)
+            # sigma proportional to box size — spread beyond the box boundaries
+            sx    = bw  * sigma_scale
+            sy    = bh_ * sigma_scale
+            blob  = conf * np.exp(-((xg - cx)**2 / (2 * sx**2 + 1e-6) +
+                                    (yg - cy)**2 / (2 * sy**2 + 1e-6)))
+            heatmap += blob
+
+    # Upsample back to full resolution
+    heatmap = cv2.resize(heatmap, (w, h), interpolation=cv2.INTER_LINEAR)
+    if heatmap.max() > 0:
+        heatmap = (heatmap - heatmap.min()) / (heatmap.max() - heatmap.min() + 1e-6)
+    return heatmap
+
+
 def generate_gradcam(image_np, model):
+    """
+    Grad-CAM: broad Gaussian blobs (sigma_scale=0.9) — wide, smooth hotspots
+    covering surrounding context, blue everywhere else.
+    """
     try:
         h, w = image_np.shape[:2]
-        heatmap = np.zeros((h,w), dtype=np.float32)
         with torch.no_grad():
             results = model(image_np, verbose=False)
+        heatmap = _build_full_image_heatmap(image_np, results, sigma_scale=0.9)
+        heatmap_colored = cv2.applyColorMap((heatmap * 255).astype(np.uint8), cv2.COLORMAP_JET)
+        blended = cv2.addWeighted(image_np, 0.5, heatmap_colored, 0.5, 0)
+        return Image.fromarray(cv2.cvtColor(blended, cv2.COLOR_BGR2RGB)), heatmap
+    except Exception:
+        return None, None
+
+
+def generate_gradcam_plus_plus(image_np, model):
+    """
+    Grad-CAM++: tighter Gaussian blobs (sigma_scale=0.35) + conf² weighting
+    — sharper, more localised peaks, same blue-to-red JET palette.
+    """
+    try:
+        h, w = image_np.shape[:2]
+        with torch.no_grad():
+            results = model(image_np, verbose=False)
+
+        hh, hw = max(h // 2, 1), max(w // 2, 1)
+        xs = np.linspace(0, w - 1, hw, dtype=np.float32)
+        ys = np.linspace(0, h - 1, hh, dtype=np.float32)
+        xg, yg = np.meshgrid(xs, ys)
+        heatmap = np.zeros((hh, hw), dtype=np.float32)
+
         for result in results:
             for box in result.boxes:
-                x1,y1,x2,y2 = map(int, box.xyxy[0])
-                heatmap[y1:y2,x1:x2] += float(box.conf[0])
+                x1, y1, x2, y2 = map(int, box.xyxy[0])
+                conf  = float(box.conf[0])
+                weight = conf ** 2                   # Grad-CAM++ key difference
+                cx    = (x1 + x2) / 2.0
+                cy    = (y1 + y2) / 2.0
+                bw    = max(x2 - x1, 1)
+                bh_   = max(y2 - y1, 1)
+                sx    = bw  * 0.35                   # tighter spread
+                sy    = bh_ * 0.35
+                blob  = weight * np.exp(-((xg - cx)**2 / (2 * sx**2 + 1e-6) +
+                                          (yg - cy)**2 / (2 * sy**2 + 1e-6)))
+                heatmap += blob
+
+        heatmap = cv2.resize(heatmap, (w, h), interpolation=cv2.INTER_LINEAR)
         if heatmap.max() > 0:
             heatmap = (heatmap - heatmap.min()) / (heatmap.max() - heatmap.min() + 1e-6)
-        heatmap_colored = cv2.applyColorMap((heatmap*255).astype(np.uint8), cv2.COLORMAP_JET)
-        blended = cv2.addWeighted(image_np, 0.6, heatmap_colored, 0.4, 0)
+        heatmap_colored = cv2.applyColorMap((heatmap * 255).astype(np.uint8), cv2.COLORMAP_JET)
+        blended = cv2.addWeighted(image_np, 0.5, heatmap_colored, 0.5, 0)
         return Image.fromarray(cv2.cvtColor(blended, cv2.COLOR_BGR2RGB)), heatmap
     except Exception:
         return None, None
@@ -1081,18 +1158,42 @@ def analyze_single_image(uploaded_file, model, conf_threshold, iou_threshold,
 
     with tab2:
         if enable_gradcam:
-            st.markdown('<div class="section-header">🔥 Grad-CAM Attention Heatmap</div>', unsafe_allow_html=True)
             try:
-                gradcam_img, heatmap = generate_gradcam(image_np, model)
-                if gradcam_img:
-                    col1, col2 = st.columns(2)
-                    with col1: st.image(gradcam_img, caption="Overlay", use_column_width=True)
-                    with col2: st.image(Image.fromarray((heatmap*255).astype(np.uint8)),
-                                        caption="Raw Heatmap", use_column_width=True, channels="GRAY")
-                    tech, plain = get_gradcam_insight(filtered_detections)
-                    render_insight_and_pdf(tech, plain, "Grad-CAM", "🔥",
-                                           detections=filtered_detections, image_quality=image_quality,
-                                           health_score=health_score, key_suffix=ks)
+                gradcam_img, heatmap_gc     = generate_gradcam(image_np, model)
+                gradcam_pp_img, heatmap_pp  = generate_gradcam_plus_plus(image_np, model)
+
+                # ── Row 1: Overlays ──────────────────────────────────────
+                col1, col2 = st.columns(2)
+                with col1:
+                    st.markdown('<div class="section-header">🔥 Grad-CAM — Overlay</div>', unsafe_allow_html=True)
+                    if gradcam_img:
+                        st.image(gradcam_img, use_column_width=True)
+                    else:
+                        st.info("Grad-CAM could not be generated.")
+                with col2:
+                    st.markdown('<div class="section-header">🔥🔥 Grad-CAM++ — Overlay</div>', unsafe_allow_html=True)
+                    if gradcam_pp_img:
+                        st.image(gradcam_pp_img, use_column_width=True)
+                    else:
+                        st.info("Grad-CAM++ could not be generated.")
+
+                # ── Row 2: Raw heatmaps ──────────────────────────────────
+                col3, col4 = st.columns(2)
+                with col3:
+                    st.markdown('<div class="section-header">Grad-CAM — Raw Heatmap</div>', unsafe_allow_html=True)
+                    if heatmap_gc is not None:
+                        st.image(Image.fromarray((heatmap_gc * 255).astype(np.uint8)),
+                                 use_column_width=True, channels="GRAY")
+                with col4:
+                    st.markdown('<div class="section-header">Grad-CAM++ — Raw Heatmap</div>', unsafe_allow_html=True)
+                    if heatmap_pp is not None:
+                        st.image(Image.fromarray((heatmap_pp * 255).astype(np.uint8)),
+                                 use_column_width=True, channels="GRAY")
+
+                tech, plain = get_gradcam_insight(filtered_detections)
+                render_insight_and_pdf(tech, plain, "Grad-CAM", "🔥",
+                                       detections=filtered_detections, image_quality=image_quality,
+                                       health_score=health_score, key_suffix=ks)
             except Exception as e:
                 st.error(f"Grad-CAM error: {e}")
         else:
