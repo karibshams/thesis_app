@@ -90,7 +90,7 @@ This project was developed as a thesis application exploring **Self-Supervised L
 
 | Grad-CAM Heatmap on Rice | Grad-CAM Heatmap on Sunflowers |
 |:---:|:---:|
-| ![Rice Heatmap](https://github.com/karibshams/thesis_app/raw/main/assets/rice_heatmap.jpg) | ![Sunflower Heatmap](https://github.com/karibshams/thesis_app/raw/main/assets/sunflower_heatmap.jpg) |
+| ![Rice Heatmap]([https://github.com/karibshams/thesis_app/raw/main/assets/rice_heatmap.jpg](https://github.com/karibshams/thesis_app/blob/main/WhatsApp%20Image%202026-05-26%20at%2012.13.03%20AM.jpeg)) | ![Sunflower Heatmap]([https://github.com/karibshams/thesis_app/raw/main/assets/sunflower_heatmap.jpg](https://github.com/karibshams/thesis_app/blob/main/WhatsApp%20Image%202026-05-26%20at%2012.18.07%20AM.jpeg)) |
 
 > The JET colormap overlays show where the model attends — **red/yellow = high activation**, **blue = background**.
 
